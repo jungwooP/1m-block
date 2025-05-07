@@ -156,6 +156,7 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
                                     return nfq_set_verdict(qh, id, NF_DROP, 0, NULL);
                                 }
 								// 그외 사이트: ACCEPT - 중요한 것은 아니어서 'Note'라고만 명시함 (없어도 과제 수행과 무관)
+                                /*
 								printf("  => [Note] ");  
 								for (char *p = h; *p && *p != '\r' && *p != '\n'; ++p) {
     								char c = *p;
@@ -163,6 +164,7 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
 									putchar(c);
 								}
 								printf(" - Accepted !\n");
+                                */
                             }
                         }
 					}
