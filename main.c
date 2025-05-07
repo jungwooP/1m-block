@@ -12,7 +12,7 @@
 
 #include <libnetfilter_queue/libnetfilter_queue.h>
 
-#define DETAIL_OUTPUT 1 
+#define DETAIL_OUTPUT 1
 // 1 : Print Packet Infomation, 0 : Only Packet ID 
 
 char* host;
@@ -98,11 +98,11 @@ static uint32_t print_pkt (struct nfq_data *tb)
 		printf("secctx=\"%.*s\" ", ret, secdata);
 
 	ret = nfq_get_payload(tb, &data);
-	if (ret >= 0)
+	if (ret >= 0){
 		printf("\n");
 		dump(data, ret);
 		printf("payload_len=%d ", ret);
-
+    }
 	fputc('\n', stdout);
 #endif
 	return id;
@@ -128,7 +128,6 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
                 if (payload_len > hdrs_len) {
                     char *http = (char *)(payload + hdrs_len);
                     int http_len = payload_len - hdrs_len;
-
                     // HTTP 요청인지 확인 
 					int is_http = 0;
 					for (int i = 0; i < n_methods; i++) {
@@ -153,8 +152,17 @@ static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
                                 if (len == (int)strlen(host) &&
                                     strncasecmp(h, host, len) == 0) {
                                     // 유해 사이트: DROP
+									printf("  => %s - Blocked !\n",host);
                                     return nfq_set_verdict(qh, id, NF_DROP, 0, NULL);
                                 }
+								// 그외 사이트: ACCEPT - 중요한 것은 아니어서 'Note'라고만 명시함 (없어도 과제 수행과 무관)
+								printf("  => [Note] ");  
+								for (char *p = h; *p && *p != '\r' && *p != '\n'; ++p) {
+    								char c = *p;
+									if (c >= 'A' && c <= 'Z') c = c - 'A' + 'a';
+									putchar(c);
+								}
+								printf(" - Accepted !\n");
                             }
                         }
 					}
@@ -231,9 +239,10 @@ int main(int argc, char **argv)
 
 	fd = nfq_fd(h);
 
+	int i = 0; 
 	for (;;) {
 		if ((rv = recv(fd, buf, sizeof(buf), 0)) >= 0) {
-			printf("pkt received\n");
+			printf("%dth packet received\n", ++i);
 			nfq_handle_packet(h, buf, rv);
 			continue;
 		}
