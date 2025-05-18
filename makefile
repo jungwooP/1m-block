@@ -1,10 +1,9 @@
-all: netfilter-test
+all: 1m-block
 
-netfilter-test: netfilter-test.o
-	gcc -o netfilter-test main.c -lnetfilter_queue
+1m-block: 1m-block.o
+	g++ -o 1m-block main.cpp -lnetfilter_queue
 
-netfilter-test.o: main.c
+1m-block.o: main.cpp
 
 clean:
-	rm -f netfilter-test
-	rm -f *.o
+	rm -f 1m-block *.o
